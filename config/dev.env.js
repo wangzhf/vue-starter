@@ -13,8 +13,8 @@ module.exports = {
 
     output: {
         path: path.resolve(__dirname, '../dist'),
-        filename: '[name].js?[chunkhash]',
-        chunkFilename: '[name].js?[chunkhash]'
+        filename: '[name].js?[hash]',
+        chunkFilename: '[name].js?[hash]'
     },
 
     module: {
@@ -54,10 +54,15 @@ module.exports = {
             verbose: true,
             dry: false
         }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new webpack.NamedChunksPlugin(),
+        new webpack.HotModuleReplacementPlugin()
     ],
 
     optimization: {
+        runtimeChunk: {
+            name: 'manifest'
+        },
         splitChunks: {
             cacheGroups: {
                 commons: {
@@ -68,6 +73,15 @@ module.exports = {
                 }
             }
         }
+    },
+
+    devServer: {
+        contentBase: path.join(__dirname, '../dist'),
+        host: '127.0.0.1',
+        port: 8010,
+        compress: true,
+        hot: true,
+        open: true
     }
 
 }
