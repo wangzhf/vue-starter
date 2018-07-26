@@ -49,11 +49,11 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/index.html'
         }),
-        new CleanWebpackPlugin([
-            'dist/*.js',
-            'dist/*.html',
-            'dist/*.css'
-        ]),
+        new CleanWebpackPlugin(['dist'], {
+            root: path.resolve(__dirname, '../'),
+            verbose: true,
+            dry: false
+        }),
         new VueLoaderPlugin()
     ],
 
@@ -63,6 +63,7 @@ module.exports = {
                 commons: {
                     test: /[\\/]node_modules[\\/]/,
                     chunks: 'all',
+                    name: 'vendor',
                     minChunks: 1
                 }
             }
