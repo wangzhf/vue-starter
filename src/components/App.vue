@@ -2,7 +2,7 @@
     <div id="app">
         <h2>Vue Starter</h2>
         <div>
-            <button v-bind:click="welcome">Start</button>
+            <button v-on:click="welcome">Start</button>
         </div>
     </div>
 </template>
