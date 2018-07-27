@@ -55,8 +55,9 @@ module.exports = {
             dry: false
         }),
         new VueLoaderPlugin(),
-        new webpack.NamedChunksPlugin(),
-        new webpack.HotModuleReplacementPlugin()
+        // 可通过 --hot 替代
+        //new webpack.NamedChunksPlugin(),
+        //new webpack.HotModuleReplacementPlugin()
     ],
 
     optimization: {
@@ -81,7 +82,7 @@ module.exports = {
         port: 8010,
         compress: true,
         hot: true,
-        open: true
+        //open: true
     }
 
 }
