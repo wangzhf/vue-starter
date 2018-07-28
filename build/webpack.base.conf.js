@@ -1,10 +1,11 @@
 const path = require('path');
+const utils = require('./utils');
+const config = require('../config');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-// 解析路径
-function resolve (dir) {
-    return path.join(__dirname, '..', dir);
-}
-
+console.log('============>> base config env', process.env.NODE_ENV);
 module.exports = {
 
     entry: {
@@ -12,7 +13,7 @@ module.exports = {
     },
 
     output: {
-        path: path.resolve(__dirname, '../dist'),
+        path: config.prod.assetsRoot,
         filename: '[name].js?[hash]',
         chunkFilename: '[name].js?[hash]'
     },
@@ -22,7 +23,7 @@ module.exports = {
         rules: [
             {
                 test: /\.vue$/,
-                use: ['vue-loader']
+                loader: 'vue-loader'
             },
             {
                 test: /\.js$/,
@@ -31,7 +32,12 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader']
+                use: [
+                    process.env.NODE_ENV !== 'production'
+                    ? 'vue-style-loader'
+                    : MiniCssExtractPlugin.loader,
+                    "css-loader"
+                ]
             },
             {
                 test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
@@ -61,5 +67,15 @@ module.exports = {
                 }
             }
         }
-    }
+    },
+
+    plugins: [
+        new VueLoaderPlugin(),
+
+        new CleanWebpackPlugin(['dist'], {
+            root: utils.resolve('/'),
+            verbose: true,
+            dry: false
+        })
+    ]
 }

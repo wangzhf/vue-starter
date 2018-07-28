@@ -1,16 +1,17 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const config = require('../config');
 const baseWebpackConfig = require('./webpack.base.conf');
 const merge = require('webpack-merge');
 const portfinder = require('portfinder');
 const FriendlyErrorPlugin = require('friendly-errors-webpack-plugin');
+const utils = require('./utils');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const devWebpackConfig = merge(baseWebpackConfig, {
-    mode: 'development',
+
+    mode: process.env.NODE_ENV || 'development',
 
     // module: {
     //     // merge from baseWebpackConfig
@@ -18,28 +19,44 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html'
+            template: utils.resolve('src/index.html'),
+            favicon: utils.resolve('src/assets/logo.png')
         }),
-        new CleanWebpackPlugin(['dist'], {
-            root: path.resolve(__dirname, '../'),
-            verbose: true,
-            dry: false
-        }),
-        new VueLoaderPlugin(),
+
         // 可通过 --hot 替代
         //new webpack.NamedChunksPlugin(),
         //new webpack.HotModuleReplacementPlugin()
+
+        // copy custom static assets
+        new CopyWebpackPlugin([
+            {
+                from: utils.resolve('static'),
+                to: config.dev.assetsSubDirecotry,
+                // 指定不copy项
+                // ignore: ['.*']
+            }
+        ])
     ],
 
     devtool: config.dev.devtool,
 
     devServer: {
-        contentBase: path.join(__dirname, '../dist'),
+        // use copy-webpack-plugin
+        // contentBase: utils.resolve('dist'),
+        contentBase: false,
         host: config.dev.host,
         port: config.dev.port,
+        clientLogLevel: 'info',
+        historyApiFallback: {
+            rewrites: [
+                { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') }
+            ]
+        },
         compress: true,
         hot: true,
+        quiet: true, // necessary for FriendlyErrorsPlugin
         open: config.dev.autoOpenBrowser,
+        publicPath: config.dev.publicPath,
         watchOptions: {
             poll: config.dev.poll
         }
