@@ -13,6 +13,14 @@ const webpackConfig = merge(baseWebpackConfig, {
 
     mode: process.env.NODE_ENV || 'production',
 
+    module: {
+        rules: utils.styleLoaders({
+            sourceMap: config.prod.productionSourceMap,
+            extract: true,
+            usePostCSS: true
+        })
+    },
+
     devtool: config.prod.productionSourceMap ? config.prod.devtool : false,
 
     output: {
@@ -23,12 +31,25 @@ const webpackConfig = merge(baseWebpackConfig, {
 
     plugins: [
 
-        // extract css into its own file
-        new MiniCssExtractPlugin({
-            filename: utils.assetsPath('css/[name].[hash:7].css'),
-            chunkFilename: utils.assetsPath('css/[name].[hash:7].css')
+        // 压缩JS代码
+        new UglifyJsPlugin({
+            uglifyOptions: {
+                compress: {
+                    warnings: false
+                }
+            },
+            sourceMap: config.prod.productionSourceMap,
+            parallel: true
         }),
 
+        // extract css into its own file
+        new MiniCssExtractPlugin({
+            // For long term caching use filename: "[contenthash].css". Optionally add [name]
+            // https://github.com/webpack-contrib/mini-css-extract-plugin#long-term-caching
+            filename: utils.assetsPath('css/[name].[contenthash:7].css'),
+            chunkFilename: utils.assetsPath('css/[name].[contenthash:7].css')
+        }),
+        // 压缩css
         new OptimizeCSSAssetsPlugin({}),
 
         new HtmlWebpackPlugin({
@@ -43,15 +64,34 @@ const webpackConfig = merge(baseWebpackConfig, {
             }
         }),
 
+        /**
+         * https://zhuanlan.zhihu.com/p/35093098
+         * https://github.com/pigcan/blog/issues/9
+         * vue-cli webpack中也有此配置
+         * 正常来讲，引用node_modules不变的话，vender的hash应该是不变的，
+         * 但是引用其他的模块，模块id变化会引起vender中模块id变化，引起hash变化，
+         * 使用此插件对引入路径进行hash截取最后几位做模块标识可解决这个问题
+         *
+         * 开发模式有另一个插件NamedModulesPlugin
+         */
+        new webpack.HashedModuleIdsPlugin(),
+
         new CopyWebpackPlugin([
             {
                 from: utils.resolve('static'),
-                to: config.prod.assetsSubDirectory
+                to: config.prod.assetsSubDirectory,
+                ignore: ['.*']
             }
         ])
 
     ],
 
 })
+
+// 配置webpack-bundle-analyzer
+if (config.prod.bundleAnalyzerReport) {
+    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+    webpackConfig.plugins.push(new BundleAnalyzerPlugin())
+}
 
 module.exports = webpackConfig;
