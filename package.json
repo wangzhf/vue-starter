@@ -12,7 +12,8 @@
 		"prod": "node build/build.js"
 	},
 	"dependencies": {
-		"vue": "^2.5.16"
+		"vue": "^2.5.16",
+		"vue-router": "^3.0.1"
 	},
 	"devDependencies": {
 		"autoprefixer": "^9.0.1",
