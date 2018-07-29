@@ -13,14 +13,6 @@ const webpackConfig = merge(baseWebpackConfig, {
 
     mode: process.env.NODE_ENV || 'production',
 
-    module: {
-        rules: utils.styleLoaders({
-            sourceMap: config.prod.productionSourceMap,
-            extract: true,
-            usePostCSS: true
-        })
-    },
-
     devtool: config.prod.productionSourceMap ? config.prod.devtool : false,
 
     output: {
