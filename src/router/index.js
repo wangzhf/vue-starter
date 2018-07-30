@@ -5,11 +5,9 @@ import HelloVue from '@/components/HelloVue'
 Vue.use(Router)
 
 export default new Router({
-    routes: [
-        {
-            path: '/',
-            name: 'HelloVue',
-            component: HelloVue
-        }
-    ]
+  routes: [{
+    path: '/',
+    name: 'HelloVue',
+    component: HelloVue
+  }]
 })
